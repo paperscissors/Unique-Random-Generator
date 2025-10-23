@@ -1,4 +1,8 @@
-# Unique Random Generator
+# UniqueRandomGenerator
+
+[![npm version](https://img.shields.io/npm/v/@paperscissors/unique-random-generator.svg)](https://www.npmjs.com/package/@paperscissors/unique-random-generator)
+[![npm downloads](https://img.shields.io/npm/dm/@paperscissors/unique-random-generator.svg)](https://www.npmjs.com/package/@paperscissors/unique-random-generator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **A perceptual randomizer that makes random sequences *feel* more random by preventing recent repetitions.**
 
@@ -19,7 +23,7 @@ Pure random number generators can produce jarring repetitions—the same card tw
 ## Quick Start
 
 ```typescript
-import { UniqueRandomGenerator } from '@/tools/UniqueRandomGenerator';
+import { UniqueRandomGenerator } from '@paperscissors/unique-random-generator';
 
 const gen = new UniqueRandomGenerator()
   .setMinMax(1, 10)
@@ -31,17 +35,27 @@ const number = gen.getRandomIntegerInRange(); // Never repeats the last 3 number
 ## Installation
 
 ```bash
-npm install unique-random-generator
+npm install @paperscissors/unique-random-generator
 ```
 
-Or copy the source file directly into your project.
+Or with yarn:
+
+```bash
+yarn add @paperscissors/unique-random-generator
+```
+
+Or with pnpm:
+
+```bash
+pnpm add @paperscissors/unique-random-generator
+```
 
 ## Usage Examples
 
 ### Basic Usage
 
 ```typescript
-import { UniqueRandomGenerator } from '@/tools/UniqueRandomGenerator';
+import { UniqueRandomGenerator } from '@paperscissors/unique-random-generator';
 
 // Create a generator for dice rolls that doesn't repeat the last 2 rolls
 const dice = new UniqueRandomGenerator()
@@ -60,8 +74,8 @@ function createShuffledDeck(numCards: number = 52) {
   const generator = new UniqueRandomGenerator()
     .setMinMax(0, numCards - 1)
     .setBufferSize(numCards); // Remember all cards for complete shuffle
-  
-  return Array.from({ length: numCards }, () => 
+
+  return Array.from({ length: numCards }, () =>
     generator.getRandomIntegerInRange()
   );
 }
@@ -76,14 +90,14 @@ console.log(deck); // All cards, shuffled, no repeats
 class SoundEffectRandomizer {
   private generator: UniqueRandomGenerator;
   private sounds: string[];
-  
+
   constructor(sounds: string[]) {
     this.sounds = sounds;
     this.generator = new UniqueRandomGenerator()
       .setMinMax(0, sounds.length - 1)
       .setBufferSize(Math.min(3, sounds.length - 1)); // Avoid last 3 sounds
   }
-  
+
   play() {
     const index = this.generator.getRandomIntegerInRange();
     const sound = this.sounds[index];
@@ -114,14 +128,14 @@ interface Question {
 class QuizSelector {
   private generator: UniqueRandomGenerator;
   private questions: Question[];
-  
+
   constructor(questions: Question[]) {
     this.questions = questions;
     this.generator = new UniqueRandomGenerator()
       .setMinMax(0, questions.length - 1)
       .setBufferSize(Math.floor(questions.length * 0.75)); // Remember 75% of questions
   }
-  
+
   getNextQuestion(): Question {
     const index = this.generator.getRandomIntegerInRange();
     return this.questions[index];
@@ -187,10 +201,71 @@ const num2 = generator.getRandomIntegerInRange(1, 10);
 
 ## How It Works
 
-1. **Cryptographic Randomness**: Uses `window.crypto.getRandomValues()` for secure random generation
+1. **Cryptographic Randomness**: Uses Web Crypto API (`crypto.getRandomValues()`) for secure random generation, compatible with Node.js 18+ and all modern browsers
 2. **Buffer Tracking**: Maintains an internal array of recently generated values
 3. **Smart Avoidance**: Regenerates numbers that exist in the buffer until finding a fresh value
 4. **Dynamic Adaptation**: Buffer size can be auto-adjusted based on range when not explicitly set
+
+## Development
+
+### Setup
+
+```bash
+# Install dependencies
+pnpm install
+
+# Run tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Build the package
+pnpm build
+
+# Build in watch mode
+pnpm dev
+
+# Lint code
+pnpm lint
+
+# Format code
+pnpm format
+
+# Type check
+pnpm typecheck
+```
+
+### Project Structure
+
+```
+unique-random-generator/
+├── src/
+│   ├── index.ts                    # Main entry point with exports
+│   └── UniqueRandomGenerator.ts    # Core class implementation
+├── tests/
+│   └── UniqueRandomGenerator.test.ts # Test suite
+├── dist/                           # Build output (generated)
+├── tsconfig.json                   # TypeScript configuration
+├── tsup.config.ts                  # Build configuration
+├── vitest.config.ts                # Test configuration
+└── package.json                    # Package metadata
+```
+
+### Publishing
+
+Before publishing to npm:
+
+```bash
+# This runs automatically via prepublishOnly
+pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build
+
+# Publish to npm (requires authentication)
+npm publish --access public
+```
 
 ## Best Practices
 
